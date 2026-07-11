@@ -52,9 +52,13 @@ function resolveImagePath(value) {
   const trimmed = value.trim()
   if (!trimmed) return null
   if (/^(https?:)?\/\//i.test(trimmed) || trimmed.startsWith('data:')) return trimmed
-  if (trimmed.startsWith('/')) return trimmed
 
-  return `/${trimmed.replace(/^\.?\//, '')}`
+  // vite.config.js sets base: '/rabih-khoury-driving-school/', so assets under
+  // /public must be prefixed with BASE_URL rather than assumed to live at the
+  // domain root — otherwise they 404 once deployed (e.g. on GitHub Pages).
+  const base = import.meta.env.BASE_URL || '/'
+  const cleanPath = trimmed.replace(/^\.?\//, '')
+  return `${base}${cleanPath}`.replace(/([^:])\/{2,}/g, '$1/')
 }
 
 function normalizeQuestion(q, forcedCategory = null) {

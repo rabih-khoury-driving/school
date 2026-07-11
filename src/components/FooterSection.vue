@@ -2,13 +2,14 @@
 import { useI18n } from '@/composables/useI18n.js'
 const { t } = useI18n()
 const year = new Date().getFullYear()
+const BASE_URL = import.meta.env.BASE_URL
 </script>
 
 <template>
   <footer class="footer">
     <div class="container footer-inner">
       <div class="footer-brand">
-        <img src="/logo.png" alt="Logo" class="footer-logo" />
+        <img :src="`${BASE_URL}logo.png`" alt="Logo" class="footer-logo" />
         <span class="footer-name">Rabih Driving School</span>
       </div>
 

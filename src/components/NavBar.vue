@@ -4,6 +4,7 @@ import { useI18n } from '@/composables/useI18n.js'
 
 const { t, lang, setLang } = useI18n()
 const menuOpen = ref(false)
+const BASE_URL = import.meta.env.BASE_URL
 
 const languages = [
   { code: 'en', label: 'EN' },
@@ -25,7 +26,7 @@ function closeMenu() {
     <div class="navbar-inner container">
       <!-- Logo + Name -->
       <a href="#home" class="brand" @click="closeMenu">
-        <img src="/logo.png" alt="Rabih Driving School Logo" class="brand-logo" />
+        <img :src="`${BASE_URL}logo.png`" alt="Rabih Driving School Logo" class="brand-logo" />
         <div class="brand-text">
           <span class="brand-name">Rabih Driving School</span>
           <span class="brand-sub">مدرسة ربيع الخوري</span>
