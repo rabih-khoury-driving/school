@@ -53,7 +53,7 @@ const { t } = useI18n()
           </div>
 
           <a
-            href="https://maps.google.com/?q=Dekwaneh,+Lebanon"
+            href="https://maps.app.goo.gl/1vDmK2W5r1KvgiYF8"
             target="_blank"
             rel="noopener"
             class="directions-btn"
@@ -70,7 +70,7 @@ const { t } = useI18n()
         <!-- Map embed -->
         <div class="map-wrapper">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3312.5!2d35.5616!3d33.8869!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x151f17c3c1c3c3c3%3A0x0!2sDekwaneh%2C+Lebanon!5e0!3m2!1sen!2slb!4v1700000000000"
+            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d207.0341320144667!2d35.54779845550035!3d33.875586508701!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMzPCsDUyJzMyLjciTiAzNcKwMzInNTMuMCJF!5e0!3m2!1sen!2slb!4v1783794465911!5m2!1sen!2slb"
             width="100%"
             height="100%"
             style="border:0;"
@@ -80,6 +80,8 @@ const { t } = useI18n()
             title="Rabih Driving School location"
           ></iframe>
         </div>
+
+        
       </div>
     </div>
   </section>

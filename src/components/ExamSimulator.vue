@@ -285,7 +285,6 @@ function questionStatus(q) {
 
         <div class="license-cards">
           <button class="license-card" @click="startExam('car')">
-            <span class="plate-badge">B</span>
             <div class="license-icon" aria-hidden="true">🚗</div>
             <div class="license-info">
               <span class="license-name">{{ t.landing.car }}</span>
@@ -300,7 +299,6 @@ function questionStatus(q) {
           </button>
 
           <button class="license-card" @click="startExam('motorcycle')">
-            <span class="plate-badge">A</span>
             <div class="license-icon" aria-hidden="true">🏍️</div>
             <div class="license-info">
               <span class="license-name">{{ t.landing.motorcycle }}</span>
@@ -400,7 +398,6 @@ function questionStatus(q) {
               class="dot"
               :class="[questionStatus(q), { active: i === currentIndex }]"
               @click="goTo(i)"
-              :title="`Q${i + 1}`"
             ></button>
           </div>
 
@@ -627,24 +624,6 @@ function questionStatus(q) {
   outline-offset: 3px;
 }
 
-.plate-badge {
-  position: absolute;
-  top: -10px;
-  inset-inline-start: -10px;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  background: #ffc800;
-  color: #0a0a0a;
-  font-family: 'Bebas Neue', 'Impact', sans-serif;
-  font-size: 1.05rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
-  border: 2px solid #0a0a0a;
-}
-
 .license-icon {
   font-size: 2.1rem;
   flex-shrink: 0;
@@ -673,12 +652,7 @@ function questionStatus(q) {
 }
 
 .license-card:hover .license-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #ffc800;
+  display: none;
   flex-shrink: 0;
 }
 
