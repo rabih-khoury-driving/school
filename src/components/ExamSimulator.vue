@@ -279,8 +279,8 @@ function questionStatus(q) {
       <div class="hero-bg"><div class="road-lines"></div></div>
 
       <div class="container hero-inner">
-        <p class="hero-eyebrow">{{ t.landing.eyebrow }}</p>
         <h1 class="hero-title">{{ t.landing.title }}</h1>
+        <p class="hero-eyebrow">{{ t.landing.eyebrow }}</p>
         <p class="hero-subtitle">{{ t.landing.subtitle }}</p>
 
         <div class="license-cards">

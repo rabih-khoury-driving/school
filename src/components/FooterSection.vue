@@ -1,6 +1,6 @@
 <script setup>
 import { useI18n } from '@/composables/useI18n.js'
-import { PHONE_DISPLAY, WHATSAPP_URL } from '@/constants/contact.js'
+import { WHATSAPP_URL } from '@/constants/contact.js'
 const { t } = useI18n()
 const year = new Date().getFullYear()
 const BASE_URL = import.meta.env.BASE_URL
@@ -19,7 +19,7 @@ const BASE_URL = import.meta.env.BASE_URL
       </p>
 
       <div class="footer-phone">
-        <a :href="WHATSAPP_URL" target="_blank" rel="noopener">{{ PHONE_DISPLAY }}</a>
+        <a dir="ltr" :href="WHATSAPP_URL" target="_blank" rel="noopener">{{ t.contact.phone_display }}</a>
       </div>
     </div>
   </footer>

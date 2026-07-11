@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from '@/composables/useI18n.js'
-import { PHONE_DISPLAY, WHATSAPP_URL } from '@/constants/contact.js'
+import { WHATSAPP_URL } from '@/constants/contact.js'
 
 const { t, lang, setLang } = useI18n()
 const menuOpen = ref(false)
@@ -66,11 +66,11 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
         <a href="#home" @click="closeMenu">{{ t.nav.exam }}</a>
         <a href="#contact" @click="closeMenu">{{ t.nav.contact }}</a>
 
-        <a :href="WHATSAPP_URL" target="_blank" rel="noopener" class="nav-whatsapp" @click="closeMenu">
+        <a dir="ltr" :href="WHATSAPP_URL" target="_blank" rel="noopener" class="nav-whatsapp" @click="closeMenu">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.87 9.87 0 004.74 1.2h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2m0 1.67c2.24 0 4.35.87 5.94 2.46a8.23 8.23 0 012.42 5.85c0 4.56-3.71 8.27-8.37 8.27a8.3 8.3 0 01-4.22-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 01-1.27-4.4c0-4.56 3.72-8.32 8.29-8.32M8.53 6.9c-.16 0-.43.06-.66.31-.22.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.57.13.16 1.76 2.83 4.38 3.86 2.17.86 2.61.69 3.08.65.47-.05 1.52-.62 1.73-1.22.22-.6.22-1.11.15-1.22-.06-.1-.23-.16-.48-.29-.25-.12-1.52-.75-1.75-.84-.24-.09-.41-.13-.58.13-.17.25-.66.83-.81 1-.15.17-.3.19-.55.06-.25-.12-1.06-.39-2.02-1.25-.75-.66-1.25-1.48-1.4-1.73-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.24-.41.08-.17.04-.31-.02-.44-.06-.12-.58-1.42-.81-1.94-.2-.5-.42-.44-.58-.45-.15 0-.32-.01-.49-.01Z"/>
           </svg>
-          {{ PHONE_DISPLAY }}
+          {{ t.contact.phone_display }}
         </a>
       </nav>
 

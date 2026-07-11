@@ -1,14 +1,14 @@
 <script setup>
 import { useI18n } from '@/composables/useI18n.js'
-import { PHONE_DISPLAY, WHATSAPP_URL } from '@/constants/contact.js'
+import { WHATSAPP_URL } from '@/constants/contact.js'
 const { t } = useI18n()
 </script>
 
 <template>
   <section id="contact" class="contact section">
     <div class="container">
-      <p class="section-eyebrow">{{ t.contact.eyebrow }}</p>
       <h2 class="section-title">{{ t.contact.title }}</h2>
+      <p class="section-eyebrow">{{ t.contact.eyebrow }}</p>
 
       <div class="contact-grid">
         <!-- Info cards -->
@@ -34,7 +34,7 @@ const { t } = useI18n()
             </div>
             <div>
               <div class="info-label">{{ t.contact.phone_label }}</div>
-              <a :href="WHATSAPP_URL" target="_blank" rel="noopener" class="info-value phone">{{ PHONE_DISPLAY }}</a>
+              <a dir="ltr" :href="WHATSAPP_URL" target="_blank" rel="noopener" class="info-value phone">{{ t.contact.phone_display }}</a>
               <div class="info-hint">{{ t.contact.whatsapp_hint }}</div>
             </div>
           </div>
@@ -53,7 +53,7 @@ const { t } = useI18n()
           </div>
 
           <a
-            href="https://maps.app.goo.gl/1vDmK2W5r1KvgiYF8"
+            href="https://maps.app.goo.gl/mSij1znFQ8qPVLWRA"
             target="_blank"
             rel="noopener"
             class="directions-btn"
@@ -70,7 +70,7 @@ const { t } = useI18n()
         <!-- Map embed -->
         <div class="map-wrapper">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d207.0341320144667!2d35.54779845550035!3d33.875586508701!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMzPCsDUyJzMyLjciTiAzNcKwMzInNTMuMCJF!5e0!3m2!1sen!2slb!4v1783794465911!5m2!1sen!2slb"
+            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d207.0336737419666!2d35.54797244643993!3d33.875775417404206!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMzPCsDUyJzMyLjciTiAzNcKwMzInNTMuMCJF!5e0!3m2!1sen!2slb!4v1783794756665!5m2!1sen!2slb"
             width="100%"
             height="100%"
             style="border:0;"
@@ -99,14 +99,14 @@ const { t } = useI18n()
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #ffc800;
-  margin: 0 0 0.75rem;
+  margin: 0.5rem 0 2.5rem;
 }
 
 .section-title {
   font-family: 'Bebas Neue', 'Impact', sans-serif;
   font-size: clamp(2rem, 4vw, 3rem);
   color: #fff;
-  margin: 0 0 3rem;
+  margin: 0 0 0;
   line-height: 1.1;
 }
 
