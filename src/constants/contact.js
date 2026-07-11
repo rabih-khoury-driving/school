@@ -4,7 +4,4 @@
 export const PHONE_DISPLAY = '03 353 530'
 export const PHONE_INTL_DISPLAY = '+961 3 353 530'
 
-// wa.me deep link: works on desktop (opens WhatsApp Web / prompts to open the
-// desktop app) and on mobile (opens the WhatsApp app directly) — no phone
-// number formatting, spaces, or a leading + or 0 allowed.
 export const WHATSAPP_URL = 'https://wa.me/9613353530'
