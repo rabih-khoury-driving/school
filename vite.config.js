@@ -6,7 +6,7 @@ import vue from '@vitejs/plugin-vue'
 // e.g. '/rabih-driving-school/' if that's your repo name
 export default defineConfig({
   plugins: [vue()],
-  base: '/rabih-khoury-driving-school/',   // <-- change to your GitHub repo name
+  base: '/school/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
