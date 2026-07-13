@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { useI18n } from '@/composables/useI18n.js'
 import questionsData from '@/data/questions_new_format.json'
 import { WHATSAPP_URL } from '@/constants/contact.js'
@@ -11,11 +11,18 @@ const QUESTIONS_PER_CATEGORY = 10
 const TOTAL_QUESTIONS = QUESTIONS_PER_CATEGORY * 3
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
+// phase: 'setup' (landing/license pick) → 'language' (exam-language pick) → 'exam' → 'result'
 const phase = ref('setup')
+const pendingLicense = ref(null)
 const selectedLicense = ref(null)
+// The exam's own language — deliberately independent of the site language
+// (site could be English while the learner wants the test in Arabic, etc.).
+// Stays null until the learner explicitly picks one on the 'language' screen.
+const examLang = ref(null)
 const questions = ref([])
 const currentIndex = ref(0)
 const answers = ref({})
+const examWrapRef = ref(null)
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 function shuffle(arr) {
@@ -42,8 +49,7 @@ function normalizeCategory(value) {
   return normalized || 'law'
 }
 
-function getTranslatedQuestion(q) {
-  const locale = lang.value
+function getTranslatedQuestion(q, locale) {
   return q?.translations?.[locale] || q?.translations?.en || null
 }
 
@@ -62,8 +68,8 @@ function resolveImagePath(value) {
   return `${base}${cleanPath}`.replace(/([^:])\/{2,}/g, '$1/')
 }
 
-function normalizeQuestion(q, forcedCategory = null) {
-  const translated = getTranslatedQuestion(q)
+function normalizeQuestion(q, forcedCategory = null, locale = 'en') {
+  const translated = getTranslatedQuestion(q, locale)
   const options = translated?.answers
     ? Object.entries(translated.answers).map(([letter, text]) => ({ letter, text }))
     : []
@@ -79,7 +85,7 @@ function normalizeQuestion(q, forcedCategory = null) {
   }
 }
 
-function pickQuestions(licenseType) {
+function pickQuestions(licenseType, locale) {
   const selectedLicenseType = normalizeLicenseType(licenseType)
   const categories = ['law', 'safety', 'signs']
   let picked = []
@@ -98,19 +104,34 @@ function pickQuestions(licenseType) {
     })
 
     const selected = shuffle(pool).slice(0, QUESTIONS_PER_CATEGORY)
-    picked = picked.concat(selected.map((q) => normalizeQuestion(q, cat)))
+    picked = picked.concat(selected.map((q) => normalizeQuestion(q, cat, locale)))
   }
 
-  return picked
+  // Interleave categories so signs/law/safety are mixed throughout the exam
+  // instead of appearing back-to-back in three separate blocks.
+  return shuffle(picked)
 }
 
 // ─── ACTIONS ─────────────────────────────────────────────────────────────────
-function startExam(license) {
-  selectedLicense.value = normalizeLicenseType(license)
-  questions.value = pickQuestions(selectedLicense.value)
+function scrollToExamTop() {
+  nextTick(() => {
+    examWrapRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+}
+
+function selectLicense(license) {
+  pendingLicense.value = normalizeLicenseType(license)
+  phase.value = 'language'
+}
+
+function chooseLanguage(code) {
+  examLang.value = code
+  selectedLicense.value = pendingLicense.value
+  questions.value = pickQuestions(selectedLicense.value, examLang.value)
   answers.value = {}
   currentIndex.value = 0
   phase.value = 'exam'
+  scrollToExamTop()
 }
 
 function selectAnswer(questionId, optionIndex) {
@@ -120,16 +141,25 @@ function selectAnswer(questionId, optionIndex) {
 
 function goTo(index) {
   currentIndex.value = index
+  scrollToExamTop()
 }
 
 function finishExam() {
   phase.value = 'result'
+  scrollToExamTop()
 }
 
 function restart() {
+  pendingLicense.value = null
   selectedLicense.value = null
+  examLang.value = null
   questions.value = []
+  answers.value = {}
+  currentIndex.value = 0
   phase.value = 'setup'
+  nextTick(() => {
+    document.getElementById('home')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
 }
 
 // ─── COMPUTED ────────────────────────────────────────────────────────────────
@@ -165,6 +195,10 @@ const categoryScores = computed(() => {
 
 const isPassed = computed(() => score.value >= Math.ceil(TOTAL_QUESTIONS * 0.7))
 
+// The exam's own language once chosen; before that (setup screen only)
+// fall back to the site language so the landing hero note still reads naturally.
+const activeLang = computed(() => examLang.value || lang.value)
+
 // ─── I18N LABELS (inline to avoid polluting existing locale files now) ───────
 const ui = computed(() => {
   const labels = {
@@ -195,6 +229,7 @@ const ui = computed(() => {
       correct: 'Correct',
       wrong: 'Wrong',
       answered: 'answered',
+      restart: 'Restart',
     },
     fr: {
       examTitle: "Simulateur d'examen",
@@ -223,6 +258,7 @@ const ui = computed(() => {
       correct: 'Correct',
       wrong: 'Incorrect',
       answered: 'répondu(es)',
+      restart: 'Recommencer',
     },
     ar: {
       examTitle: 'محاكي الامتحان',
@@ -251,10 +287,15 @@ const ui = computed(() => {
       correct: 'صحيح',
       wrong: 'خطأ',
       answered: 'مجاب',
+      restart: 'إعادة البدء',
     },
   }
-  return labels[lang.value] || labels.en
+  return labels[activeLang.value] || labels.en
 })
+
+// Direction/lang for the exam content only — independent from the site-wide
+// document dir, since the learner's chosen test language can differ from it.
+const examDir = computed(() => (examLang.value === 'ar' ? 'rtl' : 'ltr'))
 
 const catLabel = computed(() => ({
   law: ui.value.legal,
@@ -270,12 +311,14 @@ function questionStatus(q) {
 </script>
 
 <template>
-  <section id="home" class="exam-section" :class="{ 'is-landing': phase === 'setup' }">
+  <section id="home" class="exam-section" :class="{ 'is-landing': phase === 'setup' || phase === 'language' }">
 
     <!-- ══════════════════════════════════════════════════════════════
-         PHASE: SETUP — this doubles as the homepage landing view
+         PHASE: SETUP — this doubles as the homepage landing view.
+         Stays mounted during 'language' too, since language selection
+         is now a modal on top of it rather than a separate screen.
     ══════════════════════════════════════════════════════════════ -->
-    <div v-if="phase === 'setup'" class="landing-hero">
+    <div v-if="phase === 'setup' || phase === 'language'" class="landing-hero">
       <div class="hero-bg"><div class="road-lines"></div></div>
 
       <div class="container hero-inner">
@@ -284,7 +327,7 @@ function questionStatus(q) {
         <p class="hero-subtitle">{{ t.landing.subtitle }}</p>
 
         <div class="license-cards">
-          <button class="license-card" @click="startExam('car')">
+          <button class="license-card" @click="selectLicense('car')">
             <div class="license-icon" aria-hidden="true">🚗</div>
             <div class="license-info">
               <span class="license-name">{{ t.landing.car }}</span>
@@ -298,7 +341,7 @@ function questionStatus(q) {
             </span>
           </button>
 
-          <button class="license-card" @click="startExam('motorcycle')">
+          <button class="license-card" @click="selectLicense('motorcycle')">
             <div class="license-icon" aria-hidden="true">🏍️</div>
             <div class="license-info">
               <span class="license-name">{{ t.landing.motorcycle }}</span>
@@ -333,7 +376,13 @@ function questionStatus(q) {
       </a>
     </div>
 
-    <div v-else class="container exam-wrap">
+    <div
+      v-else
+      ref="examWrapRef"
+      class="container exam-wrap"
+      :dir="examDir"
+      :lang="examLang"
+    >
 
     <!-- ── EYEBROW ── -->
     <p class="section-eyebrow">{{ ui.examTitle }}</p>
@@ -348,6 +397,7 @@ function questionStatus(q) {
           <span class="exam-counter">{{ ui.question }} {{ currentIndex + 1 }} {{ ui.of }} {{ TOTAL_QUESTIONS }}</span>
           <span class="exam-cat-badge" :class="currentQ._category">{{ catLabel[currentQ._category] }}</span>
           <span class="exam-answered">{{ answeredCount }} / {{ TOTAL_QUESTIONS }} {{ ui.answered }}</span>
+          <button type="button" class="exam-restart-btn" @click="restart">↺ {{ ui.restart }}</button>
         </div>
 
         <div class="progress-bar">
@@ -463,6 +513,31 @@ function questionStatus(q) {
       </div>
 
     </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         LANGUAGE MODAL — pick the exam's own language, independent of
+         whatever language the rest of the site is in. A popup rather
+         than a full screen swap, so there's no jarring transition.
+    ══════════════════════════════════════════════════════════════ -->
+    <Teleport to="body">
+      <div v-if="phase === 'language'" class="lang-modal-backdrop" @click.self="phase = 'setup'">
+        <div class="lang-modal">
+          <button class="lang-modal-close" @click="phase = 'setup'" aria-label="Close">✕</button>
+          <h2 class="lang-modal-title">Choose Test Language<br />Choisissez la langue&nbsp;·&nbsp;اختر لغة الامتحان</h2>
+          <div class="lang-modal-options">
+            <button class="lang-option" @click="chooseLanguage('en')">
+              English
+            </button>
+            <button class="lang-option" @click="chooseLanguage('fr')">
+              Français
+            </button>
+            <button class="lang-option" dir="rtl" @click="chooseLanguage('ar')">
+              العربية
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </section>
 </template>
 
@@ -478,6 +553,7 @@ function questionStatus(q) {
 
 .exam-wrap {
   padding: 5rem 0;
+  scroll-margin-top: 88px;
 }
 
 .section-eyebrow {
@@ -561,7 +637,7 @@ function questionStatus(q) {
 }
 
 .hero-title::first-letter {
-  color: #ffc800;
+  /* color: #ffc800; */
 }
 
 [dir='rtl'] .hero-title {
@@ -720,6 +796,96 @@ function questionStatus(q) {
   .license-cards { grid-template-columns: 1fr; max-width: 380px; }
 }
 
+/* ── LANGUAGE MODAL (exam-language picker) ──────────────────────── */
+.lang-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  z-index: 200;
+  animation: lang-fade-in 0.15s ease-out;
+}
+
+@keyframes lang-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.lang-modal {
+  position: relative;
+  background: #131313;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 2rem 1.75rem 1.75rem;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  animation: lang-pop-in 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+@keyframes lang-pop-in {
+  from { opacity: 0; transform: scale(0.94) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.lang-modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1rem;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  transition: background 0.15s, color 0.15s;
+}
+.lang-modal-close:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+
+.lang-modal-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
+}
+
+.lang-modal-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.lang-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+.lang-option:hover {
+  border-color: #ffc800;
+  background: rgba(255, 200, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.lang-flag { font-size: 1.15rem; }
+
 /* ── EXAM PANEL ──────────────────────────────────────────────────── */
 .exam-panel {
   max-width: 740px;
@@ -760,6 +926,24 @@ function questionStatus(q) {
 }
 
 [dir='rtl'] .exam-answered { margin-left: 0; margin-right: auto; }
+
+.exam-restart-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.exam-restart-btn:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
 
 .progress-bar {
   height: 4px;
@@ -1099,5 +1283,8 @@ function questionStatus(q) {
   .exam-nav { flex-wrap: wrap; justify-content: space-between; }
   .question-dots { order: 3; width: 100%; }
   .license-cards { grid-template-columns: 1fr; }
+  .exam-meta { justify-content: space-between; }
+  .exam-answered { margin-left: 0; }
+  [dir='rtl'] .exam-answered { margin-right: 0; }
 }
 </style>
