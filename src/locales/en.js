@@ -22,7 +22,7 @@ export default {
     address_label: 'Address',
     address: 'Dekwaneh, Mount Lebanon, Lebanon',
     phone_label: 'Phone / WhatsApp',
-    phone_display: '03 353 530',
+    phone_display: '03 35 35 30',
     hours_label: 'Opening Hours',
     hours_val: 'Mon \u2013 Sat: 8:00 AM \u2013 6:00 PM',
     get_directions: 'Get Directions',

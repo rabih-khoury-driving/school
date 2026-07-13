@@ -22,7 +22,7 @@ export default {
     address_label: 'العنوان',
     address: 'الدكوانة، جبل لبنان، لبنان',
     phone_label: 'الهاتف / واتساب',
-    phone_display: '03 353 530',
+    phone_display: '03 35 35 30',
     hours_label: 'ساعات العمل',
     hours_val: 'الاثنين – السبت: ٨:٠٠ ص – ٦:٠٠ م',
     get_directions: 'احصل على الاتجاهات',
