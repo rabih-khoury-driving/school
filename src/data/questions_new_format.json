@@ -2281,30 +2281,30 @@
     "license_category": "Car",
     "question_category": "Safety",
     "difficulty_level": "Medium",
-    "correct_answer": "A",
+    "correct_answer": "C",
     "translations": {
       "en": {
         "question": "Before overtaking, the driver should:",
         "answers": {
           "A": "Should not take into consideration driving decorum when in populated areas",
-          "B": "Overtake, even if the driver behind have have already",
-          "C": "initiated a similar overtake"
+          "B": "Overtake, even if the driver behind has already initiated a similar overtake",
+          "C": "Make sure that drivers behind have not already initiated a similar overtaking manoeuvre"
         }
       },
       "ar": {
-        "question": "ان يتأكد من أن من يتبعه من السابقين لم يباشر بعد مماثلة بعد مناورة تجاوز مماثلة",
+        "question": "على السائق قبل الشروع بالتجاوز أن:",
         "answers": {
-          "A": "عدم مراعاة تدابير السير الممكن إتخاذها ضمن المناطق المأهولة",
-          "B": "أن يقوم بالتجاوز حتى ولو باشر السائق الذي يتبعه . بمناورة تجاوز مماثلة",
-          "C": "على السائق قبل الشروع بالتجاوز"
+          "A": "لا يراعي قواعد وآداب السير عند القيادة ضمن المناطق المأهولة",
+          "B": "يباشر بالتجاوز حتى ولو كان السائق الذي خلفه قد بدأ بمناورة تجاوز مماثلة",
+          "C": "يتأكد من أن السائقين الذين يتبعونه لم يباشروا بمناورة تجاوز مماثلة"
         }
       },
       "fr": {
-        "question": "Avant deffectuer un dépassement, le conducteur",
+        "question": "Avant d'effectuer un dépassement, le conducteur :",
         "answers": {
-          "A": "Ne doit pas respecter les pratiques de conduite dans les zones peuplées",
-          "B": "Peut se lancer même si un conducteur derrière lui a initié un dépassement lui aussi",
-          "C": "Doit sassurer que les conducteurs derrière lui nont pas initié un dépassement eux aussi"
+          "A": "Ne doit pas respecter les règles de conduite dans les zones peuplées",
+          "B": "Peut se lancer même si un conducteur derrière lui a déjà initié un dépassement",
+          "C": "Doit s'assurer que les conducteurs derrière lui n'ont pas déjà initié un dépassement"
         }
       }
     }
