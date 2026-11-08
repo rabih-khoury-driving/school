@@ -12114,31 +12114,31 @@
     "id": 368,
     "question_category": "Signs",
     "difficulty_level": "Medium",
-    "correct_answer": "C",
+    "correct_answer": "A",
     "image": "/images/questions/368.png",
     "translations": {
       "en": {
         "question": "?",
         "answers": {
-          "A": "Roundabout ahead",
-          "B": "Caution, left bend ahead",
-          "C": "Caution, right bend ahead"
+          "A": "Caution, speed bumps",
+          "B": "A left bend ahead",
+          "C": "A right bend ahead"
         }
       },
       "ar": {
         "question": "?",
         "answers": {
-          "A": "اتجاه مستديرة",
-          "B": "إنتبه منعطف يسار",
-          "C": "انتبه منعطف يمين"
+          "A": "انتبه مطبّات",
+          "B": "منعطف إلى اليسار",
+          "C": "منعطف إلى اليمين"
         }
       },
       "fr": {
         "question": "?",
         "answers": {
-          "A": "Rond point",
-          "B": "Virage à gauche",
-          "C": "Attention, virage à droite"
+          "A": "Attention, ralentisseurs",
+          "B": "Un virage à gauche",
+          "C": "Un virage à droite"
         }
       }
     }
